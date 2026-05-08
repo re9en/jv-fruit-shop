@@ -1,47 +1,53 @@
 package core.basesyntax;
 
+import db.Storage;
+import db.StorageImpl;
+import model.FruitTransaction;
+import services.impl.*;
+import services.interfaces.*;
+import strategy.OperationHandler;
+import strategy.OperationStrategy;
+import strategy.OperationStrategyImpl;
+import strategy.impl.BalanceOperationHandler;
+import strategy.impl.RemoveOperationHandler;
+import strategy.impl.ReturnOperationHandler;
+import strategy.impl.SupplyOperationHandler;
+
 import java.io.IOException;
-import java.util.Arrays;
+import java.nio.file.Path;
+import java.util.HashMap;
 import java.util.List;
-import services.impl.ActivitiesHandlerImpl;
-import services.impl.DataHandlerImpl;
-import services.impl.OperationSeparatorImpl;
-import services.impl.RawDataConverterImpl;
-import services.impl.StorageImpl;
-import services.interfaces.ActivitiesHandler;
-import services.interfaces.DataHandler;
-import services.interfaces.OperationSeparator;
-import services.interfaces.RawDataConverter;
-import services.interfaces.Storage;
+import java.util.Map;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        RawDataConverter rawDataConverter = new RawDataConverterImpl();
-
-        String[] data = rawDataConverter.dataConvert();
-
-        for (String item: data) {
-            System.out.println(item);
-        }
-
-        OperationSeparator operationSeparator = new OperationSeparatorImpl();
-
-        List<String[]> separatedData = operationSeparator.dataToArray(data);
-
-        for (String[] item: separatedData) {
-            System.out.println(Arrays.toString(item));
-        }
-
+    public static void main(String[] arg) throws IOException {
         Storage storage = new StorageImpl();
+        // 1. Read the data from the input CSV file
+        FileReader fileReader = new FileReaderImpl();
+        List<String> inputFile = fileReader.readFile(Path.of("src/main/resources/data.csv"));
 
-        ActivitiesHandler activitiesHandler = new ActivitiesHandlerImpl(storage);
+        // 2. Convert the incoming data into FruitTransactions list
+        DataConverter dataConverter = new DataConverterImpl();
+        List<FruitTransaction> transactions = dataConverter.convertToFruitTransaction(inputFile);
 
-        activitiesHandler.findAction(separatedData);
+        // 3. Create and feel the map with all OperationHandler implementations
+        Map<FruitTransaction.Operation, OperationHandler> operationHandlers = new HashMap<>();
+        operationHandlers.put(FruitTransaction.Operation.BALANCE, new BalanceOperationHandler(storage));
+        operationHandlers.put(FruitTransaction.Operation.PURCHASE, new RemoveOperationHandler(storage));
+        operationHandlers.put(FruitTransaction.Operation.RETURN, new ReturnOperationHandler(storage));
+        operationHandlers.put(FruitTransaction.Operation.SUPPLY, new SupplyOperationHandler(storage));
+        OperationStrategy operationStrategy = new OperationStrategyImpl(operationHandlers);
 
-        System.out.println(storage.getAllData());
+        // 4. Process the incoming transactions with applicable OperationHandler implementations
+        ShopService shopService = new ShopServiceImpl(operationStrategy);
+        shopService.process(transactions);
 
-        DataHandler dataHandler = new DataHandlerImpl();
+        // 5.Generate report based on the current Storage state
+        ReportGenerator reportGenerator = new ReportGeneratorImpl();
+        String resultingReport = reportGenerator.getReport(storage.getAllData());
 
-        dataHandler.writeReport("src/main/java/resources/dataOutput.csv", storage.getAllData());
+        // 6. Write the received report into the destination file
+        FileWriter fileWriter = new FileWriterImpl();
+        fileWriter.write("finalReport.csv", resultingReport);
     }
 }

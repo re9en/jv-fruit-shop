@@ -1,12 +1,11 @@
-package services.impl;
+package db;
 
 import java.util.HashMap;
 import java.util.Map;
-import services.interfaces.Storage;
 
 public class StorageImpl implements Storage {
 
-    private static final Map<String,Integer> inventory = new HashMap<>();
+    private final Map<String,Integer> inventory = new HashMap<>();
 
     public void set(String fruit, Integer quantity) {
         inventory.put(fruit, quantity);

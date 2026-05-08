@@ -1,4 +1,4 @@
-package services.interfaces;
+package db;
 
 import java.util.Map;
 
