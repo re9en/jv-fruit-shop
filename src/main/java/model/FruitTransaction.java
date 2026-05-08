@@ -2,7 +2,7 @@ package model;
 
 public class FruitTransaction {
 
-     public enum Operation {
+    public enum Operation {
         BALANCE("b"),
         SUPPLY("s"),
         PURCHASE("p"),
@@ -38,7 +38,15 @@ public class FruitTransaction {
         this.quantity = quantity;
     }
 
-    public Operation getOperation() { return operation; }
-    public String getFruit() { return fruit; }
-    public int getQuantity() { return quantity; }
+    public Operation getOperation() {
+        return operation;
+    }
+
+    public String getFruit() {
+        return fruit;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
 }

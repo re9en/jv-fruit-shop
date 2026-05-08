@@ -2,7 +2,6 @@ package services.impl;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.util.Map;
 import services.interfaces.FileWriter;
 
 public class FileWriterImpl implements FileWriter {

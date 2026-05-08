@@ -1,7 +1,7 @@
 package strategy.impl;
 
-import model.FruitTransaction;
 import db.Storage;
+import model.FruitTransaction;
 import strategy.OperationHandler;
 
 public class RemoveOperationHandler implements OperationHandler {

@@ -1,15 +1,14 @@
 package services.impl;
 
+import java.io.IOException;
+import java.util.List;
 import model.FruitTransaction;
 import services.interfaces.DataConverter;
 
-import java.io.IOException;
-import java.util.List;
-
 public class DataConverterImpl implements DataConverter {
-    private final static int CODE = 0;
-    private final static int FRUIT = 1;
-    private final static int AMOUNT = 2;
+    private static final int CODE = 0;
+    private static final int FRUIT = 1;
+    private static final int AMOUNT = 2;
 
     @Override
     public List<FruitTransaction> convertToFruitTransaction(List<String> list) throws IOException {
